@@ -1,0 +1,9 @@
+﻿"Classification Name;Parent Classification Namepath;Classification Label;Identifier;Corresponding LOB;(Optional, one or more classification field columns)FieldName ",,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+"Notes: 
+- this is a template for import file, that is separated by ;
+- to fill it, you can first split into columns (go to Data in Menu, and use Text to Columns options)
+- first 4 columns (representing basic classification details) are mandatory (meaning column header is expected), though the values might be left empty! 
+- After these 4 columns, you can provide multiple columns that represent classification fields (header column would contain field name), that would allow you to provide field data for classification you're importing. This can be used for example if you want to provide dependent classification data (for configuraing dependencies between taxonomy). Use ### as separator, if field data contains multiple values, and use namepath if field in Classification List field type
+- once you populate the file, before importing, make sure to save it as CSV, with ; as separator and not comma! ",,,,,,,,,,,,,,,
