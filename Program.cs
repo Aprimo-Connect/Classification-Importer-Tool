@@ -71,7 +71,7 @@ namespace ClassificationsIngestion
                     {
                         ClassificationName = fields[0].Trim(),
                         ParentClassificationNamepath = fields[1].Trim(),
-                        Label = fields[2].Trim(),
+                        Label = System.Web.HttpUtility.HtmlEncode(fields[2].Trim()),
                         Identifier = fields[3].Trim(),
                         ClassificationFields = new Dictionary<string, List<string>>()
                     };
@@ -79,7 +79,7 @@ namespace ClassificationsIngestion
                     classification.EncodedClassificationNamepath = HttpUtility.UrlEncode(classificationNamepath);
                     for (int i = 4; i < fields.Length; i++)
                     {
-                        if (!fields[i].Equals("<NONE>"))
+                        if (!string.IsNullOrEmpty(fields[i]))
                         {
                             FieldDefinition fieldDef;
                             if (fieldDefinitions.ContainsKey(i))
