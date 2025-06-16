@@ -3,7 +3,11 @@
     [System.Runtime.Serialization.DataContractAttribute()]
     public partial class Tokens
     {
+
+        [System.Runtime.Serialization.DataMemberAttribute(Name = "access_token")]
+        public string accessToken;
+
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public string access_token;
+        public string refreshToken;
     }
 }

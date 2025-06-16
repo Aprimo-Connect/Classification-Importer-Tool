@@ -39,15 +39,18 @@ namespace Helpers
             // Get the access and refresh tokens
             string accessToken = "";
             var client = new RestClient(tokenEndpoint);
-            var request = new RestRequest("/login/connect/token", Method.Post);
-            request.AddBody(new { client_id = clientId, client_secret = clientSecret, grant_type = "client_credentials" }, ContentType.FormUrlEncoded);
+
+            var request = new RestRequest("login/connect/token", Method.Post);
+            request.RequestFormat = DataFormat.Json;
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddParameter("application/x-www-form-urlencoded", $"grant_type=client_credentials&client_id={clientId}&client_secret={clientSecret}", ParameterType.RequestBody);
 
             RestResponse response = client.Execute(request);
-            if (response.IsSuccessStatusCode)
+            if (response.StatusCode.ToString().Equals("OK"))
             {
                 var tokens = JsonHelper.Deserialize<Tokens>(response.Content);
 
-                accessToken = tokens.access_token;
+                accessToken = tokens.accessToken;
             }
             else throw new Exception(string.Format("Access token was not created, responese status is {0}, response message: {1}", response.StatusCode, response.Content));
             return accessToken;
