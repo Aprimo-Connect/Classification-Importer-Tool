@@ -5,7 +5,6 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Runtime.Serialization.Json;
 using System.IO;
@@ -17,20 +16,19 @@ namespace Models
         public static string GetClassificationBasedOnNamepath(string encodedNamepath, string RESTEndpoint)
         {
             // Perform request
-            
             var accessHelper = AccessHelper.Instance;
             var client = new RestClient(RESTEndpoint);
-            var request = new RestRequest(string.Format("classification/?namepath={0}", encodedNamepath), Method.GET);
+            var request = new RestRequest(string.Format("classification/?namepath={0}", encodedNamepath), Method.Get);
             var accessToken = accessHelper.GetToken();
             request.AddHeader("Authorization", string.Format("Bearer " + accessToken));
             request.AddHeader("Accept", "application/hal+json");
             request.AddHeader("API-VERSION", "1");
             //request.AddHeader("namepath", string.Format("{0}", encodedNamepath));
 
-            IRestResponse response = client.Execute(request);
+            RestResponse response = client.Execute(request);
             if (response.StatusCode.ToString().Equals("unauthorized", StringComparison.OrdinalIgnoreCase))
             {
-                accessToken = accessHelper.GetRefreshedToken();
+                accessToken = accessHelper.GetToken();
                 request.AddOrUpdateParameter("Authorization", string.Format("Bearer " + accessToken));
                 response = client.Execute(request);
             }
@@ -45,17 +43,17 @@ namespace Models
                     }
                 }
                 catch (Exception ex)
-                {                   
+                {
                 }
             }
-            return "";            
+            return "";
         }
 
         public static FieldDefinition GetFieldIdByName(string fieldName, string RESTEndpoint)
         {
             var accessHelper = AccessHelper.Instance;
             var client = new RestClient(RESTEndpoint);
-            var request = new RestRequest("fielddefinitions", Method.GET);
+            var request = new RestRequest("fielddefinitions", Method.Get);
             var accessToken = accessHelper.GetToken();
 
             request.AddHeader("Authorization", string.Format("Bearer " + accessToken));
@@ -63,10 +61,10 @@ namespace Models
             //request.AddHeader("User-Agent", userAgent);
             request.AddHeader("filter", string.Format("name='{0}'", fieldName));
 
-            IRestResponse response = client.Execute(request);
+            RestResponse response = client.Execute(request);
             if (response.StatusCode.ToString().Equals("unauthorized", StringComparison.OrdinalIgnoreCase))
             {
-                accessToken = accessHelper.GetRefreshedToken();
+                accessToken = accessHelper.GetToken();
                 request.AddOrUpdateParameter("Authorization", string.Format("Bearer " + accessToken));
                 response = client.Execute(request);
             }
@@ -78,7 +76,7 @@ namespace Models
                     return fieldDefinition;
                 }
                 catch (Exception ex)
-                {                    
+                {
                 }
             }
             return null;
@@ -102,18 +100,18 @@ namespace Models
         {
             var accessHelper = AccessHelper.Instance;
             var accessToken = accessHelper.GetToken();
-            
+
             // Perform request
             string result = String.Empty;
             var client = new RestClient(RESTEndpoint);
-            var request = new RestRequest("classifications", Method.POST);
+            var request = new RestRequest("classifications", Method.Post);
             request.AddHeader("Authorization", string.Format("Bearer " + accessToken));
             request.AddHeader("API-VERSION", "1");
             //request.AddHeader("User-Agent", indexingParameters.UserAgent);
             request.AddHeader("Accept", "application/hal+json");
             //request.AddHeader("registration", indexingParameters.Registration);
             request.RequestFormat = DataFormat.Json;
-         
+
             var bodyRequest = new CreateClassificationRequest();
 
             bodyRequest.name = classification.ClassificationName;
@@ -144,13 +142,13 @@ namespace Models
                         bodyRequest.fields.addOrUpdate.Add(fieldToAdd);
                     }
                 }
-            }            
+            }
 
             request.AddJsonBody(Serialize(bodyRequest));
-            IRestResponse response = client.Execute(request);
+            RestResponse response = client.Execute(request);
             if (response.StatusCode.ToString().Equals("unauthorized", StringComparison.OrdinalIgnoreCase))
             {
-                accessToken = accessHelper.GetRefreshedToken();
+                accessToken = accessHelper.GetToken();
                 request.AddOrUpdateParameter("Authorization", string.Format("Bearer " + accessToken));
                 response = client.Execute(request);
             }
@@ -164,7 +162,7 @@ namespace Models
             dynamic o = JsonConvert.DeserializeObject(response.Content);
             return o.id.ToString();
         }
-        
+
         public static string EditClassification(ClassificationSpecification classification, string RESTEndpoint)
         {
             var accessHelper = AccessHelper.Instance;
@@ -173,7 +171,7 @@ namespace Models
             // Perform request
             string result = String.Empty;
             var client = new RestClient(RESTEndpoint);
-            var request = new RestRequest(string.Format("classification/{0}", classification.Id), Method.PUT);
+            var request = new RestRequest(string.Format("classification/{0}", classification.Id), Method.Put);
             request.AddHeader("Authorization", string.Format("Bearer " + accessToken));
             request.AddHeader("API-VERSION", "1");
             request.AddHeader("Accept", "application/hal+json");
@@ -211,10 +209,10 @@ namespace Models
             }
 
             request.AddJsonBody(Serialize(bodyRequest));
-            IRestResponse response = client.Execute(request);
+            RestResponse response = client.Execute(request);
             if (response.StatusCode.ToString().Equals("unauthorized", StringComparison.OrdinalIgnoreCase))
             {
-                accessToken = accessHelper.GetRefreshedToken();
+                accessToken = accessHelper.GetToken();
                 request.AddOrUpdateParameter("Authorization", string.Format("Bearer " + accessToken));
                 response = client.Execute(request);
             }

@@ -28,9 +28,8 @@ namespace ClassificationsIngestion
 
             if (string.IsNullOrEmpty(path)) return;
 
-            var registration = ConfigurationManager.AppSettings.Get("registration");
-            var token = ConfigurationManager.AppSettings.Get("token");
             var clientId = ConfigurationManager.AppSettings.Get("clientId");
+            var clientSecret = ConfigurationManager.AppSettings.Get("clientSecret");
             var userAgent = ConfigurationManager.AppSettings.Get("userAgent");
             var tokenEndpoint = ConfigurationManager.AppSettings.Get("TokenEndpoint");
             var RESTEndpoint = ConfigurationManager.AppSettings.Get("RESTEndpoint");
@@ -38,7 +37,7 @@ namespace ClassificationsIngestion
             var accessHelper = AccessHelper.Instance;
             //we need to properly intialize AccessHelper with client relevant data
             //this is done only once!
-            accessHelper.Create(token, tokenEndpoint, clientId);
+            accessHelper.Create(tokenEndpoint, clientId, clientSecret);
 
             //get all classifications configuration requirements from a CSV file
             //file should contain these columns: Classification Name, Parent Classification Path, field columns to represent individual fields on classification
