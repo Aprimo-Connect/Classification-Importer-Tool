@@ -1,7 +1,4 @@
-﻿
-using System;
-
-namespace Helpers
+﻿namespace Helpers
 {
     public sealed class AccessHelper
     {        
@@ -10,27 +7,25 @@ namespace Helpers
         /// </summary>
         public static AccessHelper Instance = new AccessHelper();
 
-        private string clientToken;
         private string tokenEndpoint;
         private string clientId;
+        private string clientSecret;
         private string accessToken;
-        private string refreshToken;
 
         private object lockMe = new object();
 
         private AccessHelper()
         {
-            clientToken = "";
             tokenEndpoint = "";
             clientId = "";
             accessToken = "";
-            refreshToken = "";
+            clientSecret = "";
         }
        
-        public void Create(string clientToken, string tokenEndpoint, string clientId)
+        public void Create(string tokenEndpoint, string clientId, string clientSecret)
         {
-            this.clientToken = clientToken;
             this.clientId = clientId;
+            this.clientSecret = clientSecret;
             this.tokenEndpoint = tokenEndpoint;
         }
         public string GetToken()
@@ -42,24 +37,7 @@ namespace Helpers
 
             lock (lockMe)
             {
-                accessToken = JsonHelper.GetAccessToken(clientToken, tokenEndpoint, clientId, ref refreshToken);
-            }
-            return accessToken;
-        }
-
-        public string GetRefreshedToken()
-        {
-            lock (lockMe)
-            {
-                try
-                {
-                    accessToken = JsonHelper.RefreshToken(clientToken, tokenEndpoint, clientId, refreshToken);
-                }
-                catch(Exception ex)
-                {
-                    //if exception happens when refresshing token, then the original token has expired, get a new one
-                    accessToken = JsonHelper.GetAccessToken(clientToken, tokenEndpoint, clientId, ref refreshToken);
-                }
+                accessToken = JsonHelper.GetAccessToken(tokenEndpoint, clientId, clientSecret);
             }
             return accessToken;
         }

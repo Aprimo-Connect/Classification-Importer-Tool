@@ -34,46 +34,22 @@ namespace Helpers
             return jsonString;
         }
 
-        public static string GetAccessToken(string clientToken, string tokenEndpoint, string clientId, ref string refreshToken)
+        public static string GetAccessToken(string tokenEndpoint, string clientId, string clientSecret)
         {
             // Get the access and refresh tokens
             string accessToken = "";
             var client = new RestClient(tokenEndpoint);
-            var request = new RestRequest("api/oauth/create-native-token", Method.POST);
-            request.AddHeader("Authorization", string.Format("Basic " + clientToken));
-            request.AddHeader("ContentType", "application/json");
-            request.AddHeader("client-id", clientId);
-            
-            IRestResponse response = client.Execute(request);
-            if (response.StatusCode.ToString().Equals("OK"))
+            var request = new RestRequest("/login/connect/token", Method.Post);
+            request.AddBody(new { client_id = clientId, client_secret = clientSecret, grant_type = "client_credentials" }, ContentType.FormUrlEncoded);
+
+            RestResponse response = client.Execute(request);
+            if (response.IsSuccessStatusCode)
             {
                 var tokens = JsonHelper.Deserialize<Tokens>(response.Content);
 
-                accessToken = tokens.accessToken;
-                refreshToken = tokens.refreshToken;
+                accessToken = tokens.access_token;
             }
             else throw new Exception(string.Format("Access token was not created, responese status is {0}, response message: {1}", response.StatusCode, response.Content));
-            return accessToken;
-        }
-
-        public static string RefreshToken(string clientToken, string tokenEndpoint, string clientId, string refreshToken)
-        {
-            // Get the access and refresh tokens
-            string accessToken = "";
-            var client = new RestClient(tokenEndpoint);
-            var request = new RestRequest("api/token", Method.POST);
-            request.AddHeader("Authorization", string.Format("Basic " + clientToken));
-            request.AddHeader("ContentType", "application/json");
-            request.AddHeader("client-id", clientId);
-            request.RequestFormat = DataFormat.Json;
-            request.AddJsonBody(new { refreshToken = refreshToken });
-
-            IRestResponse response = client.Execute(request);
-            if (response.StatusCode.ToString().Equals("OK"))
-            {               
-                accessToken = response.Content.Replace("\"", "");
-            }
-            else throw new Exception(string.Format("Access token could not be refreshed, responese status is {0}, response message: {1}", response.StatusCode, response.Content));
             return accessToken;
         }
 
